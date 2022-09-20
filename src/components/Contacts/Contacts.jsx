@@ -22,7 +22,9 @@ export class Contacts extends Component {
   render() {
     const { filter } = this.state;
     const { contacts, onClickDelete } = this.props;
-    const filteredContacts = contacts.filter(el => el.name.includes(filter));
+    const filteredContacts = contacts.filter(el =>
+      el.name.toLowerCase().includes(filter.toLowerCase())
+    );
 
     return (
       <WrapperContainer>
