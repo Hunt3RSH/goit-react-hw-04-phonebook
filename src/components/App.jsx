@@ -11,7 +11,9 @@ export class App extends Component {
   };
 
   onGetDataForm = data => {
-    const hasName = this.state.contacts.some(it => it.name === data.name);
+    const hasName = this.state.contacts.some(
+      el => el.name.toLowerCase() === data.name.toLowerCase()
+    );
     if (hasName) {
       Notify.warning(`Contact "${data.name}" is already exist.`);
       return;
