@@ -1,67 +1,48 @@
-import { Component } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Notify } from 'notiflix';
 import { Section } from './Section/Section';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Contacts } from './Contacts/Contacts';
 
-export class App extends Component {
-  state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '777-77-70' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-  };
-
-  componentDidMount() {
-    if (localStorage.getItem('contacts')) {
-      this.setState(() => {
-        return {
-          contacts: [...JSON.parse(localStorage.getItem('contacts'))],
-        };
-      });
+export const App = () => {
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem('contacts')) || []
+  );
+  useEffect(() => {
+    const saveContacts = localStorage.getItem('contacts');
+    if (saveContacts) {
+      setContacts(JSON.parse(saveContacts));
     }
-  }
+  }, []);
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  onGetDataForm = data => {
-    const hasName = this.state.contacts.some(
-      el => el.name.toLowerCase() === data.name.toLowerCase()
-    );
-    if (hasName) {
-      Notify.warning(`Contact "${data.name}" is already in contacts.`);
+  const onGetDataForm = ({ name, number }) => {
+    const contactName = contacts.map(el => el.name);
+    if (contactName.includes(name)) {
+      Notify.warning(`Contact "${name}" is already in contacts.`);
       return;
     }
 
-    this.setState(p => ({
-      contacts: [...p.contacts, { ...data, id: nanoid() }],
-    }));
+    setContacts(el => [...el, { id: nanoid(), name, number }]);
   };
 
-  deleteItem = deletedId => {
-    this.setState(p => ({
-      contacts: p.contacts.filter(({ id }) => id !== deletedId),
-    }));
+  const deleteItem = deletedId => {
+    setContacts(el => el.filter(contact => contact.id !== deletedId));
   };
 
-  render() {
-    const { contacts } = this.state;
-    return (
-      <>
-        <Section title="Phonebook">
-          <ContactForm onSubmit={this.onGetDataForm} />
-        </Section>
-        <Section title="Contacts">
-          <Contacts contacts={contacts} onClickDelete={this.deleteItem} />
-        </Section>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Section title="Phonebook">
+        <ContactForm onSubmit={onGetDataForm} />
+      </Section>
+      <Section title="Contacts">
+        <Contacts contacts={contacts} onClickDelete={deleteItem} />
+      </Section>
+    </>
+  );
+};
