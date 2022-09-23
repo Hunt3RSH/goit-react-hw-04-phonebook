@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ContactFormButton, ContactFormStyle } from './ContactForm.styled';
 import { InputField } from 'components/InputField/InputField';
