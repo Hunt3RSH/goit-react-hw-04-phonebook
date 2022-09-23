@@ -21,7 +21,7 @@ export const App = () => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  const onGetDataForm = ({ name, number }) => {
+  const onGetDataForm = (name, number) => {
     const contactName = contacts.map(el => el.name);
     if (contactName.includes(name)) {
       Notify.warning(`Contact "${name}" is already in contacts.`);
